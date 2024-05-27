@@ -4,7 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 import fluff.loader.loaders.ResourceLoader;
-import fluff.loader.resources.ClassResource;
+import fluff.loader.resources.FileResource;
+import fluff.loader.resources.FolderResource;
 import fluff.loader.resources.JarResource;
 
 public class RuntimeClassLoader extends AbstractClassLoader {
@@ -21,16 +22,23 @@ public class RuntimeClassLoader extends AbstractClassLoader {
 		this(getSystemClassLoader());
 	}
 	
-	public boolean addJar(File file) {
+	public boolean addJar(File jarFile) {
 		try {
-			return resourceLoader.getResourcePath().add(new JarResource(file.toURI().toURL()));
+			return resourceLoader.getResourcePath().add(new JarResource(jarFile.toURI().toURL()));
 		} catch (MalformedURLException e) {}
 		return false;
 	}
 	
-	public boolean addClass(String name, File file) {
+	public boolean addFile(String name, File file) {
 		try {
-			return resourceLoader.getResourcePath().add(new ClassResource(name, file.toURI().toURL()));
+			return resourceLoader.getResourcePath().add(new FileResource(name, file.toURI().toURL()));
+		} catch (MalformedURLException e) {}
+		return false;
+	}
+	
+	public boolean addFolder(File folder) {
+		try {
+			return resourceLoader.getResourcePath().add(new FolderResource(folder));
 		} catch (MalformedURLException e) {}
 		return false;
 	}

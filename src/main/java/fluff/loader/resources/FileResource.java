@@ -6,14 +6,14 @@ import java.net.URL;
 
 import fluff.loader.IResource;
 
-public class ClassResource implements IResource {
+public class FileResource implements IResource {
 	
 	private final String name;
 	private final URL url;
 	
 	private byte[] content;
 	
-	public ClassResource(String name, URL url) {
+	public FileResource(String name, URL url) {
 		this.name = name;
 		this.url = url;
 	}
