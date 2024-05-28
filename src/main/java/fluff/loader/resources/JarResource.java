@@ -10,6 +10,9 @@ import java.util.jar.JarInputStream;
 
 import fluff.loader.IResource;
 
+/**
+ * Represents a jar resource that can be loaded from a URL.
+ */
 public class JarResource implements IResource {
 	
 	private final Map<String, byte[]> contents = new HashMap<>();
@@ -17,6 +20,11 @@ public class JarResource implements IResource {
 	private final URL url;
 	private final URL jarUrl;
 	
+    /**
+     * Constructs a JarResource with the specified URL.
+     *
+     * @param url the URL of the resource
+     */
 	public JarResource(URL url) throws MalformedURLException {
 		this.url = url;
 		this.jarUrl = new URL("jar:" + url.toString() + "!/");
