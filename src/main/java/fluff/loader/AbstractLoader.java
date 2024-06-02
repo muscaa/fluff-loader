@@ -23,20 +23,20 @@ public abstract class AbstractLoader {
     public abstract Class<?> loadClass(String className, boolean resolve);
     
     /**
-     * Returns an input stream for reading the specified resource.
-     *
-     * @param name the resource name
-     * @return an InputStream for reading the resource, or null if the resource could not be found
-     */
-    public abstract InputStream getResourceAsStream(String name);
-    
-    /**
      * Finds the resource with the given name.
      *
      * @param name the resource name
      * @return a URL for the resource, or null if the resource could not be found
      */
     public abstract URL getResource(String name);
+    
+    /**
+     * Returns an input stream for reading the specified resource.
+     *
+     * @param name the resource name
+     * @return an InputStream for reading the resource, or null if the resource could not be found
+     */
+    public abstract InputStream getResourceAsStream(String name);
     
     /**
      * Returns whether this loader is enabled.

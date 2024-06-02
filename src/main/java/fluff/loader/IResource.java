@@ -1,5 +1,6 @@
 package fluff.loader;
 
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -23,10 +24,10 @@ public interface IResource {
     URL getURL(String name);
     
     /**
-     * Retrieves the content of the resource as a byte array with the specified name.
+     * Retrieves an InputStream for the resource with the specified name.
      *
      * @param name the name of the resource
-     * @return the content of the resource as a byte array, or null if the resource is not found
+     * @return an InputStream for the resource, or null if the resource is not found
      */
-    byte[] getBytes(String name);
+    InputStream getInputStream(String name);
 }

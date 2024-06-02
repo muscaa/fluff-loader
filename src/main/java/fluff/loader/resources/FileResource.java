@@ -14,8 +14,6 @@ public class FileResource implements IResource {
     private final String name;
     private final URL url;
     
-    private byte[] content;
-    
     /**
      * Constructs a FileResource with the specified name and URL.
      *
@@ -29,12 +27,7 @@ public class FileResource implements IResource {
     
     @Override
     public boolean load() {
-        try (InputStream is = url.openStream()) {
-            content = is.readAllBytes();
-            return true;
-        } catch (IOException e) {}
-        
-        return false;
+        return true;
     }
     
     @Override
@@ -43,7 +36,13 @@ public class FileResource implements IResource {
     }
     
     @Override
-    public byte[] getBytes(String name) {
-        return this.name.equals(name) ? content : null;
+    public InputStream getInputStream(String name) {
+    	if (!this.name.equals(name)) return null;
+    	
+        try {
+			return url.openStream();
+		} catch (IOException e) {}
+        
+        return null;
     }
 }

@@ -35,14 +35,14 @@ public class SystemLoader extends AbstractLoader {
     }
     
     @Override
-    public InputStream getResourceAsStream(String name) {
-        if (!isEnabled()) return null;
-        return ClassLoader.getSystemResourceAsStream(name);
-    }
-    
-    @Override
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         return ClassLoader.getSystemResource(name);
+    }
+    
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        if (!isEnabled()) return null;
+        return ClassLoader.getSystemResourceAsStream(name);
     }
 }

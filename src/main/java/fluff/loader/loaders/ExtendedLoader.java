@@ -36,16 +36,16 @@ public class ExtendedLoader extends AbstractLoader {
     }
     
     @Override
-    public InputStream getResourceAsStream(String name) {
-        if (!isEnabled()) return null;
-        
-        return extended.invoke().getResourceAsStream(name);
-    }
-    
-    @Override
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         
         return extended.invoke().getResource(name);
+    }
+    
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        if (!isEnabled()) return null;
+        
+        return extended.invoke().getResourceAsStream(name);
     }
 }

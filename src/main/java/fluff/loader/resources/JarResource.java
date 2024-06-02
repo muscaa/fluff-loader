@@ -1,6 +1,7 @@
 package fluff.loader.resources;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import fluff.loader.IResource;
  */
 public class JarResource implements IResource {
 	
-	private final Map<String, byte[]> contents = new HashMap<>();
+	private final Map<String, IResource> contents = new HashMap<>();
 	
 	private final URL url;
 	private final URL jarUrl;
@@ -37,7 +38,14 @@ public class JarResource implements IResource {
 			while ((jarEntry = jis.getNextJarEntry()) != null) {
 				if (jarEntry.isDirectory()) continue;
 				
-                contents.put(jarEntry.getName(), jis.readAllBytes());
+				String name = jarEntry.getName();
+				URL url = new URL(jarUrl, name);
+				
+            	IResource r = name.endsWith(".class") ?
+            			new ClassResource(name, url, jis.readAllBytes())
+            			: new FileResource(name, url);
+				
+				contents.put(name, r);
 			}
 			
 			return true;
@@ -48,17 +56,11 @@ public class JarResource implements IResource {
 	
 	@Override
 	public URL getURL(String name) {
-		if (!contents.containsKey(name)) return null;
-		
-		try {
-			return new URL(jarUrl, name);
-		} catch (MalformedURLException e) {}
-		
-		return null;
+		return contents.containsKey(name) ? contents.get(name).getURL(name) : null;
 	}
 	
 	@Override
-	public byte[] getBytes(String name) {
-		return contents.containsKey(name) ? contents.get(name) : null;
+	public InputStream getInputStream(String name) {
+		return contents.containsKey(name) ? contents.get(name).getInputStream(name) : null;
 	}
 }

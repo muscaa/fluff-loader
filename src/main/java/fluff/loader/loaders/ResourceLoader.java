@@ -1,6 +1,6 @@
 package fluff.loader.loaders;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -32,8 +32,19 @@ public class ResourceLoader extends AbstractLoader {
         
         if (classes.containsKey(className)) return classes.get(className);
         
-        byte[] bytes = resourcePath.getBytes(className.replace('.', '/') + ".class");
-        if (bytes == null) return null;
+        InputStream is = resourcePath.getInputStream(className.replace('.', '/') + ".class");
+        if (is == null) return null;
+        
+        byte[] bytes;
+        try {
+        	bytes = is.readAllBytes();
+        	is.close();
+        } catch (IOException e) {
+        	try {
+				is.close();
+			} catch (IOException e1) {}
+        	return null;
+        }
         
         Class<?> clazz = builder().defineClass(className, bytes, 0, bytes.length);
         if (clazz == null) return null;
@@ -51,16 +62,6 @@ public class ResourceLoader extends AbstractLoader {
     }
     
     @Override
-    public InputStream getResourceAsStream(String name) {
-        if (!isEnabled()) return null;
-        
-        byte[] bytes = resourcePath.getBytes(name);
-        if (bytes == null) return null;
-        
-        return new ByteArrayInputStream(bytes);
-    }
-    
-    @Override
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         
@@ -68,6 +69,16 @@ public class ResourceLoader extends AbstractLoader {
         if (url == null) return null;
         
         return url;
+    }
+    
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        if (!isEnabled()) return null;
+        
+        InputStream is = resourcePath.getInputStream(name);
+        if (is != null) return is;
+        
+        return null;
     }
 
     /**

@@ -1,5 +1,6 @@
 package fluff.loader;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
  * Manages a collection of resources and provides methods to add resources and retrieve data from them.
  */
 public class ResourcePath {
-	
+    
     private final List<IResource> resources = new ArrayList<>();
     
     /**
@@ -40,15 +41,15 @@ public class ResourcePath {
     }
     
     /**
-     * Retrieves the bytes of a resource by name.
+     * Retrieves an InputStream for a resource by name.
      *
      * @param name the name of the resource
-     * @return the bytes of the resource, or null if not found
+     * @return an InputStream for the resource, or null if not found
      */
-    public byte[] getBytes(String name) {
+    public InputStream getInputStream(String name) {
         for (IResource r : resources) {
-            byte[] bytes = r.getBytes(name);
-            if (bytes != null) return bytes;
+            InputStream is = r.getInputStream(name);
+            if (is != null) return is;
         }
         return null;
     }

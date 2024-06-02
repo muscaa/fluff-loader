@@ -3,6 +3,7 @@ package fluff.loader.resources;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import fluff.loader.IResource;
  */
 public class FolderResource implements IResource {
     
-    private final Map<String, byte[]> contents = new HashMap<>();
+    private final Map<String, IResource> contents = new HashMap<>();
     
     private final File folder;
     private final URL url;
@@ -56,24 +57,25 @@ public class FolderResource implements IResource {
             }
             
             try (FileInputStream fis = new FileInputStream(f)) {
-                contents.put(path + f.getName(), fis.readAllBytes());
+            	String name = path + f.getName();
+            	URL url = new URL(this.url, name);
+            	
+            	IResource r = name.endsWith(".class") ?
+            			new ClassResource(name, url, fis.readAllBytes())
+            			: new FileResource(name, url);
+            	
+                contents.put(name, r);
             }
         }
     }
     
-    @Override
-    public URL getURL(String name) {
-        if (!contents.containsKey(name)) return null;
-        
-        try {
-            return new URL(url, name);
-        } catch (MalformedURLException e) {}
-        
-        return null;
-    }
-    
-    @Override
-    public byte[] getBytes(String name) {
-        return contents.get(name);
-    }
+	@Override
+	public URL getURL(String name) {
+		return contents.containsKey(name) ? contents.get(name).getURL(name) : null;
+	}
+	
+	@Override
+	public InputStream getInputStream(String name) {
+		return contents.containsKey(name) ? contents.get(name).getInputStream(name) : null;
+	}
 }
