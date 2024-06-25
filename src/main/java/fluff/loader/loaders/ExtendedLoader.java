@@ -1,7 +1,9 @@
 package fluff.loader.loaders;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 import fluff.functions.gen.Func;
 import fluff.loader.AbstractLoader;
@@ -47,5 +49,15 @@ public class ExtendedLoader extends AbstractLoader {
         if (!isEnabled()) return null;
         
         return extended.invoke().getResourceAsStream(name);
+    }
+    
+    @Override
+    public Iterator<URL> getResources(String name) {
+    	if (!isEnabled()) return null;
+    	
+    	try {
+			return extended.invoke().getResources(name).asIterator();
+		} catch (IOException e) {}
+    	return null;
     }
 }

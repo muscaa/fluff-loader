@@ -3,8 +3,9 @@ package fluff.loader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -110,21 +111,6 @@ public abstract class AbstractClassLoader extends ClassLoader {
     }
     
     @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
-        if (name == null || name.isBlank()) return EnumerationUtils.empty();
-        
-        List<URL> list = new ArrayList<>();
-        
-        for (AbstractLoader l : loaders) {
-            URL url = l.getResource(name);
-            
-            if (url != null) list.add(url);
-        }
-        
-        return EnumerationUtils.iterator(list.iterator());
-    }
-    
-    @Override
     public InputStream getResourceAsStream(String name) {
         if (name == null || name.isBlank()) return null;
         
@@ -135,6 +121,21 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
         
         return null;
+    }
+    
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        if (name == null || name.isBlank()) return EnumerationUtils.empty();
+        
+        List<URL> list = new LinkedList<>();
+        
+        for (AbstractLoader l : loaders) {
+            Iterator<URL> urls = l.getResources(name);
+            
+            if (urls != null) urls.forEachRemaining(list::add);
+        }
+        
+        return EnumerationUtils.iterator(list.iterator());
     }
     
     /**

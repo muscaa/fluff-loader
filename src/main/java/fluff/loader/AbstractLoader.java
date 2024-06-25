@@ -2,6 +2,7 @@ package fluff.loader;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 /**
  * Abstract class that represents a loader for classes and resources.
@@ -37,6 +38,8 @@ public abstract class AbstractLoader {
      * @return an InputStream for reading the resource, or null if the resource could not be found
      */
     public abstract InputStream getResourceAsStream(String name);
+    
+    public abstract Iterator<URL> getResources(String name);
     
     /**
      * Returns whether this loader is enabled.

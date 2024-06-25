@@ -3,6 +3,8 @@ package fluff.loader;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,6 +37,7 @@ public class ResourcePath {
     public URL getURL(String name) {
         for (IResource r : resources) {
             URL url = r.getURL(name);
+            
             if (url != null) return url;
         }
         return null;
@@ -49,8 +52,21 @@ public class ResourcePath {
     public InputStream getInputStream(String name) {
         for (IResource r : resources) {
             InputStream is = r.getInputStream(name);
+            
             if (is != null) return is;
         }
         return null;
+    }
+    
+    public Iterator<URL> getURLs(String name) {
+    	List<URL> list = new LinkedList<>();
+    	
+    	for (IResource r : resources) {
+    		Iterator<URL> urls = r.getURLs(name);
+    		
+    		if (urls != null) urls.forEachRemaining(list::add);
+    	}
+    	
+    	return list.iterator();
     }
 }

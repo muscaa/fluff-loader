@@ -1,7 +1,9 @@
 package fluff.loader.loaders;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 import fluff.functions.gen.obj.TFunc1;
 import fluff.loader.AbstractLoader;
@@ -28,6 +30,7 @@ public class SystemLoader extends AbstractLoader {
     @Override
     public Class<?> loadClass(String className, boolean resolve) {
         if (!isEnabled()) return null;
+        
         try {
             return findSystemClass.invoke(className);
         } catch (ClassNotFoundException e) {}
@@ -37,12 +40,24 @@ public class SystemLoader extends AbstractLoader {
     @Override
     public URL getResource(String name) {
         if (!isEnabled()) return null;
+        
         return ClassLoader.getSystemResource(name);
     }
     
     @Override
     public InputStream getResourceAsStream(String name) {
         if (!isEnabled()) return null;
+        
         return ClassLoader.getSystemResourceAsStream(name);
+    }
+    
+    @Override
+    public Iterator<URL> getResources(String name) {
+    	if (!isEnabled()) return null;
+    	
+    	try {
+			return ClassLoader.getSystemResources(name).asIterator();
+		} catch (IOException e) {}
+    	return null;
     }
 }

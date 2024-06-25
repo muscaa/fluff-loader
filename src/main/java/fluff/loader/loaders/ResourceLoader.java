@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import fluff.loader.AbstractLoader;
@@ -79,6 +80,11 @@ public class ResourceLoader extends AbstractLoader {
         if (is != null) return is;
         
         return null;
+    }
+    
+    @Override
+    public Iterator<URL> getResources(String name) {
+    	return null;
     }
 
     /**

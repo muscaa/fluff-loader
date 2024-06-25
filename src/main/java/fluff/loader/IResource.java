@@ -2,6 +2,7 @@ package fluff.loader;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 /**
  * Represents a generic resource that can be loaded and accessed.
@@ -30,4 +31,6 @@ public interface IResource {
      * @return an InputStream for the resource, or null if the resource is not found
      */
     InputStream getInputStream(String name);
+    
+    Iterator<URL> getURLs(String name);
 }

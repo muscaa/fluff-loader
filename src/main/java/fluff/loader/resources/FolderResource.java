@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import fluff.loader.IResource;
@@ -77,5 +80,18 @@ public class FolderResource implements IResource {
 	@Override
 	public InputStream getInputStream(String name) {
 		return contents.containsKey(name) ? contents.get(name).getInputStream(name) : null;
+	}
+	
+	@Override
+	public Iterator<URL> getURLs(String name) {
+    	List<URL> list = new LinkedList<>();
+    	
+    	for (Map.Entry<String, IResource> e : contents.entrySet()) {
+    		Iterator<URL> urls = e.getValue().getURLs(name);
+    		
+    		if (urls != null) urls.forEachRemaining(list::add);
+    	}
+    	
+    	return list.iterator();
 	}
 }

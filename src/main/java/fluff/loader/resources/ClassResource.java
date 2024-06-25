@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 import fluff.loader.IResource;
 
@@ -59,5 +61,12 @@ public class ClassResource implements IResource {
     @Override
     public InputStream getInputStream(String name) {
         return this.name.equals(name) ? new ByteArrayInputStream(content) : null;
+    }
+    
+    @Override
+    public Iterator<URL> getURLs(String name) {
+    	URL url = getURL(name);
+    	
+    	return url != null ? List.of(url).iterator() : null;
     }
 }
