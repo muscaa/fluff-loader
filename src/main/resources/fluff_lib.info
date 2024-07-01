@@ -2,6 +2,6 @@ v1
 
 author muscaa
 id fluff-loader
-depends muscaa/fluff-functions
+# depends
 url https://github.com/muscaa/fluff-loader
 # class

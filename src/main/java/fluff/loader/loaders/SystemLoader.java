@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
 
-import fluff.functions.gen.obj.TFunc1;
 import fluff.loader.AbstractLoader;
 
 /**
@@ -13,17 +12,12 @@ import fluff.loader.AbstractLoader;
  */
 public class SystemLoader extends AbstractLoader {
 	
-    private final TFunc1<Class<?>, String, ClassNotFoundException> findSystemClass;
-    
     /**
-     * Constructs a SystemLoader with the specified priority and function to find system classes.
+     * Constructs a SystemLoader with the specified priority.
      *
      * @param priority the priority of this loader
-     * @param findSystemClass the function to find system classes
      */
-    public SystemLoader(int priority, TFunc1<Class<?>, String, ClassNotFoundException> findSystemClass) {
-        this.findSystemClass = findSystemClass;
-        
+    public SystemLoader(int priority) {
         setPriority(priority);
     }
     
@@ -32,7 +26,7 @@ public class SystemLoader extends AbstractLoader {
         if (!isEnabled()) return null;
         
         try {
-            return findSystemClass.invoke(className);
+            return ClassLoader.getSystemClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {}
         return null;
     }

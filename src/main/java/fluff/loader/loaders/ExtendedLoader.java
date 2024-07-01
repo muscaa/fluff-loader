@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.function.Supplier;
 
-import fluff.functions.gen.Func;
 import fluff.loader.AbstractLoader;
 
 /**
@@ -13,15 +13,15 @@ import fluff.loader.AbstractLoader;
  */
 public class ExtendedLoader extends AbstractLoader {
 	
-    private final Func<ClassLoader> extended;
+    private final Supplier<ClassLoader> extended;
     
     /**
      * Constructs an ExtendedLoader with the specified priority and extended class loader.
      *
      * @param priority the priority of this loader
-     * @param extended a function that provides the extended class loader
+     * @param extended a Supplier that provides the extended class loader
      */
-    public ExtendedLoader(int priority, Func<ClassLoader> extended) {
+    public ExtendedLoader(int priority, Supplier<ClassLoader> extended) {
         this.extended = extended;
         
         setPriority(priority);
@@ -32,7 +32,7 @@ public class ExtendedLoader extends AbstractLoader {
         if (!isEnabled()) return null;
         
         try {
-            return extended.invoke().loadClass(className);
+            return extended.get().loadClass(className);
         } catch (ClassNotFoundException e) {}
         return null;
     }
@@ -41,14 +41,14 @@ public class ExtendedLoader extends AbstractLoader {
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         
-        return extended.invoke().getResource(name);
+        return extended.get().getResource(name);
     }
     
     @Override
     public InputStream getResourceAsStream(String name) {
         if (!isEnabled()) return null;
         
-        return extended.invoke().getResourceAsStream(name);
+        return extended.get().getResourceAsStream(name);
     }
     
     @Override
@@ -56,7 +56,7 @@ public class ExtendedLoader extends AbstractLoader {
     	if (!isEnabled()) return null;
     	
     	try {
-			return extended.invoke().getResources(name).asIterator();
+			return extended.get().getResources(name).asIterator();
 		} catch (IOException e) {}
     	return null;
     }

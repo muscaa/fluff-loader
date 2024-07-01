@@ -42,7 +42,7 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
     };
     
-    private final SystemLoader systemLoader = new SystemLoader(0, this::findSystemClass);
+    private final SystemLoader systemLoader = new SystemLoader(0);
     private final ExtendedLoader contextLoader = new ExtendedLoader(systemLoader.getPriority() + 10, Thread.currentThread()::getContextClassLoader);
     private final ExtendedLoader parentLoader = new ExtendedLoader(contextLoader.getPriority() + 10, this::getParent);
     private final ExtendedLoader currentLoader = new ExtendedLoader(parentLoader.getPriority() + 10, this.getClass()::getClassLoader);
