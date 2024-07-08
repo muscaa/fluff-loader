@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import fluff.loader.AbstractLoader;
@@ -33,17 +33,12 @@ public class ResourceLoader extends AbstractLoader {
         
         if (classes.containsKey(className)) return classes.get(className);
         
-        InputStream is = resourcePath.getInputStream(className.replace('.', '/') + ".class");
-        if (is == null) return null;
-        
         byte[] bytes;
-        try {
-        	bytes = is.readAllBytes();
-        	is.close();
+        try (InputStream is = getResourceAsStream(className.replace('.', '/') + ".class")) {
+        	if (is == null) return null;
+        	
+            bytes = is.readAllBytes();
         } catch (IOException e) {
-        	try {
-				is.close();
-			} catch (IOException e1) {}
         	return null;
         }
         
@@ -66,25 +61,21 @@ public class ResourceLoader extends AbstractLoader {
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         
-        URL url = resourcePath.getURL(name);
-        if (url == null) return null;
-        
-        return url;
+        return resourcePath.getURL(name);
     }
     
     @Override
     public InputStream getResourceAsStream(String name) {
         if (!isEnabled()) return null;
         
-        InputStream is = resourcePath.getInputStream(name);
-        if (is != null) return is;
-        
-        return null;
+        return resourcePath.getInputStream(name);
     }
     
     @Override
-    public Iterator<URL> getResources(String name) {
-    	return null;
+    public void getResources(List<URL> list, String name) {
+        if (!isEnabled()) return;
+        
+        resourcePath.getURLs(list, name);
     }
 
     /**

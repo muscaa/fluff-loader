@@ -3,7 +3,6 @@ package fluff.loader.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 import fluff.loader.IResource;
@@ -49,9 +48,11 @@ public class FileResource implements IResource {
     }
     
     @Override
-    public Iterator<URL> getURLs(String name) {
+    public void getURLs(List<URL> list, String name) {
     	URL url = getURL(name);
     	
-    	return url != null ? List.of(url).iterator() : null;
+    	if (url != null) {
+    		list.add(url);
+    	}
     }
 }

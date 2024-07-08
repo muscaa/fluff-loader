@@ -2,7 +2,7 @@ package fluff.loader;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Represents a generic resource that can be loaded and accessed.
@@ -32,5 +32,11 @@ public interface IResource {
      */
     InputStream getInputStream(String name);
     
-    Iterator<URL> getURLs(String name);
+    /**
+     * Retrieves the URLs of the resources with the specified name.
+     *
+     * @param list the list where to store the resources
+     * @param name the name of the resources
+     */
+    void getURLs(List<URL> list, String name);
 }

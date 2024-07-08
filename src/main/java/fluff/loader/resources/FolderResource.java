@@ -6,11 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import fluff.loader.IResource;
 
@@ -37,38 +41,57 @@ public class FolderResource implements IResource {
     
     @Override
     public boolean load() {
-        try {
-            load("", folder);
-            return true;
-        } catch (IOException e) {}
+    	ExecutorService executor = Executors.newCachedThreadPool();
+    	List<Future<Map.Entry<String, IResource>>> results = new LinkedList<>();
+    	
+        load(executor, results, "", folder);
         
-        return false;
+        for (Future<Map.Entry<String, IResource>> result : results) {
+        	try {
+        		Map.Entry<String, IResource> e = result.get();
+        		if (e == null) return false;
+        		
+        		contents.put(e.getKey(), e.getValue());
+			} catch (InterruptedException | ExecutionException e) {
+				return false;
+			}
+        }
+        
+        executor.shutdown();
+        
+        return true;
     }
     
     /**
      * Recursively loads the contents of the specified folder.
      *
+     * @param executor the executor service to use
+     * @param results the list where to store the results
      * @param path the path within the folder
      * @param file the file to be loaded
-     * @throws IOException if an I/O error occurs
      */
-    protected void load(String path, File file) throws IOException {
+    protected void load(ExecutorService executor, List<Future<Map.Entry<String, IResource>>> results, String path, File file) {
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
-                load(path + f.getName() + "/", f);
+                load(executor, results, path + f.getName() + "/", f);
                 continue;
             }
             
-            try (FileInputStream fis = new FileInputStream(f)) {
-            	String name = path + f.getName();
-            	URL url = new URL(this.url, name);
-            	
-            	IResource r = name.endsWith(".class") ?
-            			new ClassResource(name, url, fis.readAllBytes())
-            			: new FileResource(name, url);
-            	
-                contents.put(name, r);
-            }
+            Future<Map.Entry<String, IResource>> result = executor.submit(() -> {
+                try (FileInputStream fis = new FileInputStream(f)) {
+                	String name = path + f.getName();
+                	URL url = new URL(this.url, name);
+                	
+                	IResource r = name.endsWith(".class") ?
+                			new ClassResource(name, url, fis.readAllBytes())
+                			: new FileResource(name, url);
+                    
+                    return new SimpleEntry<>(name, r);
+				} catch (IOException e) {}
+                return null;
+            });
+            
+            results.add(result);
         }
     }
     
@@ -83,15 +106,9 @@ public class FolderResource implements IResource {
 	}
 	
 	@Override
-	public Iterator<URL> getURLs(String name) {
-    	List<URL> list = new LinkedList<>();
-    	
+	public void getURLs(List<URL> list, String name) {
     	for (Map.Entry<String, IResource> e : contents.entrySet()) {
-    		Iterator<URL> urls = e.getValue().getURLs(name);
-    		
-    		if (urls != null) urls.forEachRemaining(list::add);
+    		e.getValue().getURLs(list, name);
     	}
-    	
-    	return list.iterator();
 	}
 }

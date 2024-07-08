@@ -26,6 +26,7 @@ public class RuntimeClassLoader extends AbstractClassLoader {
      */
     public RuntimeClassLoader(ClassLoader parent) {
         super(parent);
+        
         addLoader(resourceLoader);
     }
     

@@ -3,8 +3,6 @@ package fluff.loader;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -58,15 +56,15 @@ public class ResourcePath {
         return null;
     }
     
-    public Iterator<URL> getURLs(String name) {
-    	List<URL> list = new LinkedList<>();
-    	
+    /**
+     * Retrieves the URLs of a resources by name.
+     *
+     * @param list the list where to store the resources
+     * @param name the name of the resources
+     */
+    public void getURLs(List<URL> list, String name) {
     	for (IResource r : resources) {
-    		Iterator<URL> urls = r.getURLs(name);
-    		
-    		if (urls != null) urls.forEachRemaining(list::add);
+    		r.getURLs(list, name);
     	}
-    	
-    	return list.iterator();
     }
 }

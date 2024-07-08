@@ -3,7 +3,7 @@ package fluff.loader.loaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.List;
 
 import fluff.loader.AbstractLoader;
 
@@ -46,12 +46,13 @@ public class SystemLoader extends AbstractLoader {
     }
     
     @Override
-    public Iterator<URL> getResources(String name) {
-    	if (!isEnabled()) return null;
+    public void getResources(List<URL> list, String name) {
+    	if (!isEnabled()) return;
     	
     	try {
-			return ClassLoader.getSystemResources(name).asIterator();
+    		ClassLoader.getSystemResources(name)
+					.asIterator()
+					.forEachRemaining(list::add);
 		} catch (IOException e) {}
-    	return null;
     }
 }

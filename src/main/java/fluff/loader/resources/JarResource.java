@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -68,15 +66,9 @@ public class JarResource implements IResource {
 	}
 	
 	@Override
-	public Iterator<URL> getURLs(String name) {
-    	List<URL> list = new LinkedList<>();
-    	
+	public void getURLs(List<URL> list, String name) {
     	for (Map.Entry<String, IResource> e : contents.entrySet()) {
-    		Iterator<URL> urls = e.getValue().getURLs(name);
-    		
-    		if (urls != null) urls.forEachRemaining(list::add);
+    		e.getValue().getURLs(list, name);
     	}
-    	
-    	return list.iterator();
 	}
 }

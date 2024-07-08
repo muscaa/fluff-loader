@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -130,9 +129,7 @@ public abstract class AbstractClassLoader extends ClassLoader {
         List<URL> list = new LinkedList<>();
         
         for (AbstractLoader l : loaders) {
-            Iterator<URL> urls = l.getResources(name);
-            
-            if (urls != null) urls.forEachRemaining(list::add);
+            l.getResources(list, name);
         }
         
         return EnumerationUtils.iterator(list.iterator());

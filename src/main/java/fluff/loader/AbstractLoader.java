@@ -2,7 +2,7 @@ package fluff.loader;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Abstract class that represents a loader for classes and resources.
@@ -39,7 +39,13 @@ public abstract class AbstractLoader {
      */
     public abstract InputStream getResourceAsStream(String name);
     
-    public abstract Iterator<URL> getResources(String name);
+    /**
+     * Finds the resources with the given name.
+     *
+     * @param list the list where to store the resources
+     * @param name the resource name
+     */
+    public abstract void getResources(List<URL> list, String name);
     
     /**
      * Returns whether this loader is enabled.
@@ -91,7 +97,7 @@ public abstract class AbstractLoader {
      *
      * @return the class builder
      */
-    public IClassBuilder builder() {
+    protected IClassBuilder builder() {
         return builder;
     }
 }
