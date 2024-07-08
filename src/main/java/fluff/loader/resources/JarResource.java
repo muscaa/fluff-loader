@@ -26,6 +26,7 @@ public class JarResource implements IResource {
      * Constructs a JarResource with the specified URL.
      *
      * @param url the URL of the resource
+     * @throws MalformedURLException if the URL is not a JAR
      */
 	public JarResource(URL url) throws MalformedURLException {
 		this.url = url;
