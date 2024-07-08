@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Set;
 
 import fluff.loader.AbstractLoader;
 
@@ -13,20 +13,25 @@ import fluff.loader.AbstractLoader;
  */
 public class ExtendedLoader extends AbstractLoader {
 	
-    private final Supplier<ClassLoader> extended;
+    private final ClassLoader extended;
     
     /**
-     * Constructs an ExtendedLoader with the specified priority and extended class loader.
+     * Constructs an ExtendedLoader with the specified used class loaders, priority and extended class loader.
      *
-     * @param parent the parent of this loader
+     * @param inUse the Set containing the class loaders already in use
      * @param priority the priority of this loader
-     * @param extended a Supplier that provides the extended class loader
+     * @param extended the extended class loader
      */
-    public ExtendedLoader(ExtendedLoader parent, int priority, Supplier<ClassLoader> extended) {
+    public ExtendedLoader(Set<ClassLoader> inUse, int priority, ClassLoader extended) {
         this.extended = extended;
         
         setPriority(priority);
-        setEnabled(parent == null || !parent.extended.get().equals(extended.get()));
+        
+        if (inUse.contains(extended)) {
+        	setEnabled(false);
+        } else {
+        	inUse.add(extended);
+        }
     }
     
     @Override
@@ -34,7 +39,7 @@ public class ExtendedLoader extends AbstractLoader {
         if (!isEnabled()) return null;
         
         try {
-            return extended.get().loadClass(className);
+            return extended.loadClass(className);
         } catch (ClassNotFoundException e) {}
         return null;
     }
@@ -43,14 +48,14 @@ public class ExtendedLoader extends AbstractLoader {
     public URL getResource(String name) {
         if (!isEnabled()) return null;
         
-        return extended.get().getResource(name);
+        return extended.getResource(name);
     }
     
     @Override
     public InputStream getResourceAsStream(String name) {
         if (!isEnabled()) return null;
         
-        return extended.get().getResourceAsStream(name);
+        return extended.getResourceAsStream(name);
     }
     
     @Override
@@ -58,7 +63,7 @@ public class ExtendedLoader extends AbstractLoader {
     	if (!isEnabled()) return;
     	
     	try {
-			extended.get().getResources(name)
+			extended.getResources(name)
 					.asIterator()
 					.forEachRemaining(list::add);
 		} catch (IOException e) {}

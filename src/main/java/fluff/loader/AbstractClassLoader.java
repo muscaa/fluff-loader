@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import fluff.loader.loaders.ExtendedLoader;
@@ -40,10 +42,12 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
     };
     
-    private final ExtendedLoader systemLoader = new ExtendedLoader(null, 0, ClassLoader::getSystemClassLoader);
-    private final ExtendedLoader contextLoader = new ExtendedLoader(systemLoader, systemLoader.getPriority() + 10, Thread.currentThread()::getContextClassLoader);
-    private final ExtendedLoader parentLoader = new ExtendedLoader(contextLoader, contextLoader.getPriority() + 10, this::getParent);
-    private final ExtendedLoader currentLoader = new ExtendedLoader(parentLoader, parentLoader.getPriority() + 10, this.getClass()::getClassLoader);
+    protected final Set<ClassLoader> inUse = new HashSet<>();
+    
+    private final ExtendedLoader systemLoader = new ExtendedLoader(inUse, 0, ClassLoader.getSystemClassLoader());
+    private final ExtendedLoader contextLoader = new ExtendedLoader(inUse, systemLoader.getPriority() + 10, Thread.currentThread().getContextClassLoader());
+    private final ExtendedLoader parentLoader = new ExtendedLoader(inUse, contextLoader.getPriority() + 10, this.getParent());
+    private final ExtendedLoader currentLoader = new ExtendedLoader(inUse, parentLoader.getPriority() + 10, this.getClass().getClassLoader());
     
     /**
      * Constructs an AbstractClassLoader with the specified parent class loader.
