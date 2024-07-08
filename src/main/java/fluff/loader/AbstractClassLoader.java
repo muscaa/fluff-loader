@@ -42,6 +42,9 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
     };
     
+    /**
+     * A Set to store the currently in use class loaders to prevent duplicates
+     */
     protected final Set<ClassLoader> inUse = new HashSet<>();
     
     private final ExtendedLoader systemLoader = new ExtendedLoader(inUse, 0, ClassLoader.getSystemClassLoader());
