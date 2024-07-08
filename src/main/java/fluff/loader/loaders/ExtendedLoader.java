@@ -18,13 +18,15 @@ public class ExtendedLoader extends AbstractLoader {
     /**
      * Constructs an ExtendedLoader with the specified priority and extended class loader.
      *
+     * @param parent the parent of this loader
      * @param priority the priority of this loader
      * @param extended a Supplier that provides the extended class loader
      */
-    public ExtendedLoader(int priority, Supplier<ClassLoader> extended) {
+    public ExtendedLoader(ExtendedLoader parent, int priority, Supplier<ClassLoader> extended) {
         this.extended = extended;
         
         setPriority(priority);
+        setEnabled(parent == null || !parent.extended.get().equals(extended.get()));
     }
     
     @Override

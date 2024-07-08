@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import fluff.loader.loaders.ExtendedLoader;
-import fluff.loader.loaders.SystemLoader;
 import fluff.loader.utils.EnumerationUtils;
 
 /**
@@ -41,10 +40,10 @@ public abstract class AbstractClassLoader extends ClassLoader {
         }
     };
     
-    private final SystemLoader systemLoader = new SystemLoader(0);
-    private final ExtendedLoader contextLoader = new ExtendedLoader(systemLoader.getPriority() + 10, Thread.currentThread()::getContextClassLoader);
-    private final ExtendedLoader parentLoader = new ExtendedLoader(contextLoader.getPriority() + 10, this::getParent);
-    private final ExtendedLoader currentLoader = new ExtendedLoader(parentLoader.getPriority() + 10, this.getClass()::getClassLoader);
+    private final ExtendedLoader systemLoader = new ExtendedLoader(null, 0, ClassLoader::getSystemClassLoader);
+    private final ExtendedLoader contextLoader = new ExtendedLoader(systemLoader, systemLoader.getPriority() + 10, Thread.currentThread()::getContextClassLoader);
+    private final ExtendedLoader parentLoader = new ExtendedLoader(contextLoader, contextLoader.getPriority() + 10, this::getParent);
+    private final ExtendedLoader currentLoader = new ExtendedLoader(parentLoader, parentLoader.getPriority() + 10, this.getClass()::getClassLoader);
     
     /**
      * Constructs an AbstractClassLoader with the specified parent class loader.
@@ -136,11 +135,11 @@ public abstract class AbstractClassLoader extends ClassLoader {
     }
     
     /**
-     * Returns the SystemLoader used by this class loader.
+     * Returns the ExtendedLoader for the system class loader.
      *
-     * @return the SystemLoader
+     * @return the system class loader's ExtendedLoader
      */
-    public SystemLoader getSystemLoader() {
+    public ExtendedLoader getSystemLoader() {
         return systemLoader;
     }
     
