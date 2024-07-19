@@ -8,13 +8,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import fluff.loader.IResource;
 
@@ -42,17 +42,18 @@ public class FolderResource implements IResource {
     @Override
     public boolean load() {
     	ExecutorService executor = Executors.newCachedThreadPool();
-    	List<Future<Map.Entry<String, IResource>>> results = new LinkedList<>();
+    	CompletionService<Map.Entry<String, IResource>> completion = new ExecutorCompletionService<>(executor);
     	
-        load(executor, results, "", folder);
+        int files = load(completion, "", folder);
         
-        for (Future<Map.Entry<String, IResource>> result : results) {
+        for (int i = 0; i < files; i++) {
         	try {
-        		Map.Entry<String, IResource> e = result.get();
-        		if (e == null) return false;
+        		Map.Entry<String, IResource> e = completion.take().get();
+        		if (e == null) throw new InterruptedException("Something went wrong!");
         		
         		contents.put(e.getKey(), e.getValue());
 			} catch (InterruptedException | ExecutionException e) {
+				executor.shutdownNow();
 				return false;
 			}
         }
@@ -65,19 +66,21 @@ public class FolderResource implements IResource {
     /**
      * Recursively loads the contents of the specified folder.
      *
-     * @param executor the executor service to use
-     * @param results the list where to store the results
+     * @param completion the completion service to use
      * @param path the path within the folder
      * @param file the file to be loaded
+     * @return the number of files
      */
-    protected void load(ExecutorService executor, List<Future<Map.Entry<String, IResource>>> results, String path, File file) {
+    protected int load(CompletionService<Map.Entry<String, IResource>> completion, String path, File file) {
+    	int files = 0;
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
-                load(executor, results, path + f.getName() + "/", f);
+                files += load(completion, path + f.getName() + "/", f);
                 continue;
             }
             
-            Future<Map.Entry<String, IResource>> result = executor.submit(() -> {
+            files++;
+            completion.submit(() -> {
                 try (FileInputStream fis = new FileInputStream(f)) {
                 	String name = path + f.getName();
                 	URL url = new URL(this.url, name);
@@ -90,9 +93,8 @@ public class FolderResource implements IResource {
 				} catch (IOException e) {}
                 return null;
             });
-            
-            results.add(result);
         }
+        return files;
     }
     
 	@Override
