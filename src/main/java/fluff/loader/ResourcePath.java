@@ -10,20 +10,18 @@ import java.util.List;
  */
 public class ResourcePath {
     
-    private final List<IResource> resources = new ArrayList<>();
+    protected final List<IResource> resources = new ArrayList<>();
     
     /**
-     * Adds a resource to the resource path.
+     * Retrieves the URLs of a resources by name.
      *
-     * @param resource the resource to add
-     * @return true if the resource was added successfully, false otherwise
+     * @param list the list where to store the resources
+     * @param name the name of the resources
      */
-    public boolean add(IResource resource) {
-        if (resource.load()) {
-            resources.add(resource);
-            return true;
-        }
-        return false;
+    public void getURLs(List<URL> list, String name) {
+    	for (IResource r : resources) {
+    		r.getURLs(list, name);
+    	}
     }
     
     /**
@@ -42,14 +40,14 @@ public class ResourcePath {
     }
     
     /**
-     * Retrieves an InputStream for a resource by name.
+     * Opens an InputStream for a resource by name.
      *
      * @param name the name of the resource
      * @return an InputStream for the resource, or null if not found
      */
-    public InputStream getInputStream(String name) {
+    public InputStream openInputStream(String name) {
         for (IResource r : resources) {
-            InputStream is = r.getInputStream(name);
+            InputStream is = r.openInputStream(name);
             
             if (is != null) return is;
         }
@@ -57,14 +55,25 @@ public class ResourcePath {
     }
     
     /**
-     * Retrieves the URLs of a resources by name.
+     * Adds a resource to the resource path.
      *
-     * @param list the list where to store the resources
-     * @param name the name of the resources
+     * @param resource the resource to add
+     * @return true if the resource was added successfully, false otherwise
      */
-    public void getURLs(List<URL> list, String name) {
-    	for (IResource r : resources) {
-    		r.getURLs(list, name);
-    	}
+    public boolean add(IResource resource) {
+        if (resource.init()) {
+            resources.add(resource);
+            return true;
+        }
+        return false;
     }
+    
+    /**
+     * Retrieves the list of resources.
+     * 
+     * @return the list of resources
+     */
+    public List<IResource> getResources() {
+		return resources;
+	}
 }

@@ -4,113 +4,65 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
-import fluff.loader.IResource;
+import fluff.loader.AbstractContentsResource;
 
 /**
- * Represents a folder resource that can be loaded from a directory.
+ * Represents a folder resource.
  */
-public class FolderResource implements IResource {
+public class FolderResource extends AbstractContentsResource {
     
-    private final Map<String, IResource> contents = new HashMap<>();
-    
-    private final File folder;
-    private final URL url;
-    
-    /**
-     * Constructs a FolderResource with the specified folder.
-     *
-     * @param folder the folder to be used as a resource
-     * @throws MalformedURLException if the folder's URL is malformed
-     */
-    public FolderResource(File folder) throws MalformedURLException {
-        this.folder = folder;
-        this.url = folder.toURI().toURL();
-    }
-    
-    @Override
-    public boolean load() {
-    	ExecutorService executor = Executors.newCachedThreadPool();
-    	CompletionService<Map.Entry<String, IResource>> completion = new ExecutorCompletionService<>(executor);
-    	
-        int files = load(completion, "", folder);
-        
-        for (int i = 0; i < files; i++) {
-        	try {
-        		Map.Entry<String, IResource> e = completion.take().get();
-        		if (e == null) throw new InterruptedException("Something went wrong!");
-        		
-        		contents.put(e.getKey(), e.getValue());
-			} catch (InterruptedException | ExecutionException e) {
-				executor.shutdownNow();
-				return false;
-			}
-        }
-        
-        executor.shutdown();
-        
-        return true;
-    }
-    
-    /**
-     * Recursively loads the contents of the specified folder.
-     *
-     * @param completion the completion service to use
-     * @param path the path within the folder
-     * @param file the file to be loaded
-     * @return the number of files
-     */
-    protected int load(CompletionService<Map.Entry<String, IResource>> completion, String path, File file) {
-    	int files = 0;
-        for (File f : file.listFiles()) {
-            if (f.isDirectory()) {
-                files += load(completion, path + f.getName() + "/", f);
-                continue;
-            }
-            
-            files++;
-            completion.submit(() -> {
-                try (FileInputStream fis = new FileInputStream(f)) {
-                	String name = path + f.getName();
-                	URL url = new URL(this.url, name);
-                	
-                	IResource r = name.endsWith(".class") ?
-                			new ClassResource(name, url, fis.readAllBytes())
-                			: new FileResource(name, url);
-                    
-                    return new SimpleEntry<>(name, r);
-				} catch (IOException e) {}
-                return null;
+	protected final boolean preload;
+	protected final File folder;
+	
+	/**
+	 * Constructs a FolderResource with the specified preload value and folder.
+	 * 
+	 * @param preload whether to preload the classes in the jar (better
+	 * performance at the cost of an overhead and higher memory usage)
+	 * @param folder the folder
+	 */
+	public FolderResource(boolean preload, File folder) {
+		this.preload = preload;
+		this.folder = folder;
+	}
+	
+	@Override
+	public boolean init() {
+		Path basePath = folder.toPath();
+		
+		try (Stream<Path> paths = Files.walk(basePath).parallel()) {
+            return paths.allMatch(path -> {
+            	File file = path.toFile();
+            	if (file.isDirectory()) return true;
+            	
+                String name = basePath.relativize(path).toString().replace('\\', '/');
+                
+                return load(name, file);
             });
-        }
-        return files;
-    }
-    
-	@Override
-	public URL getURL(String name) {
-		return contents.containsKey(name) ? contents.get(name).getURL(name) : null;
+		} catch (IOException e) {}
+		
+		return false;
 	}
 	
-	@Override
-	public InputStream getInputStream(String name) {
-		return contents.containsKey(name) ? contents.get(name).getInputStream(name) : null;
-	}
-	
-	@Override
-	public void getURLs(List<URL> list, String name) {
-    	for (Map.Entry<String, IResource> e : contents.entrySet()) {
-    		e.getValue().getURLs(list, name);
-    	}
+	protected boolean load(String name, File file) {
+		if (!name.endsWith(".class")) {
+			return register(name, new FileResource(name, file));
+		}
+		
+		if (!preload) {
+			return register(name, new ClassResource(name, file));
+		}
+		
+		try (InputStream is = new FileInputStream(file)) {
+			byte[] data = is.readAllBytes();
+			
+			return register(name, new ClassResource(name, data));
+		} catch (Exception e) {}
+		
+		return false;
 	}
 }

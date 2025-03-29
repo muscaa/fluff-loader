@@ -68,7 +68,7 @@ public class ResourceLoader extends AbstractLoader {
     public InputStream getResourceAsStream(String name) {
         if (!isEnabled()) return null;
         
-        return resourcePath.getInputStream(name);
+        return resourcePath.openInputStream(name);
     }
     
     @Override

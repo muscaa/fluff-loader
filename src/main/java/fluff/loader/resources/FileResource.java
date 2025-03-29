@@ -1,58 +1,62 @@
 package fluff.loader.resources;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
-import fluff.loader.IResource;
+import fluff.loader.AbstractNamedResource;
 
 /**
- * Represents a file resource that can be loaded from a URL.
+ * Represents a file resource.
  */
-public class FileResource implements IResource {
+public class FileResource extends AbstractNamedResource {
     
-    private final String name;
-    private final URL url;
-    
+	protected final File file;
+	
     /**
-     * Constructs a FileResource with the specified name and URL.
-     *
+     * Constructs a FileResource with the specified name and file.
+     * 
      * @param name the name of the resource
-     * @param url the URL of the resource
+     * @param file the file resource
      */
-    public FileResource(String name, URL url) {
-        this.name = name;
-        this.url = url;
-    }
-    
-    @Override
-    public boolean load() {
-        return true;
-    }
-    
-    @Override
-    public URL getURL(String name) {
-        return this.name.equals(name) ? url : null;
-    }
-    
-    @Override
-    public InputStream getInputStream(String name) {
-    	if (!this.name.equals(name)) return null;
-    	
-        try {
-			return url.openStream();
-		} catch (IOException e) {}
+    public FileResource(String name, File file) {
+        super(name);
         
-        return null;
+        this.file = file;
     }
     
-    @Override
-    public void getURLs(List<URL> list, String name) {
-    	URL url = getURL(name);
-    	
-    	if (url != null) {
-    		list.add(url);
-    	}
-    }
+	@Override
+	public boolean init() {
+		return true;
+	}
+	
+	@Override
+	public URL getURL() {
+		try {
+			return file.toURI().toURL();
+		} catch (MalformedURLException e) {}
+		
+		return null;
+	}
+	
+	@Override
+	public InputStream openInputStream() {
+		try {
+			return new FileInputStream(file);
+		} catch (FileNotFoundException e) {}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the file resource.
+	 * 
+	 * @return the file resource
+	 */
+	public File getFile() {
+		return file;
+	}
 }
