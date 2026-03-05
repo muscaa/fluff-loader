@@ -40,8 +40,8 @@ name: Publish to Maven Central
 #     types: [published]
 on:
   push:
-    branches:
-      - main
+    # branches:
+      # - main
     tags:
       - "v*.*.*"
 
