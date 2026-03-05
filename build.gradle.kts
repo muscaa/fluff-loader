@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.musca"
-version = System.getenv("GITHUB_REF_NAME") ?: "0.0.1-SNAPSHOT"
+version = System.getenv("GITHUB_REF_NAME")?.removePrefix("v") ?: "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
