@@ -32,11 +32,15 @@ mavenPublishing {
     signAllPublications()
     coordinates(project.group.toString(), project.name, project.version.toString())
 
+    val developerId = "muscaa"
+    val developerName = "musca"
+    val projectId = project.name
+
     pom {
         name.set("Fluff Loader")
         description.set("A library that provides a Runtime Class Loader, allowing you to dynamically load classes, jars, files, and folders at runtime")
         inceptionYear.set("2024")
-        url.set("https://github.com/muscaa/fluff-loader/")
+        url.set("https://github.com/${developerId}/${projectId}/")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -46,15 +50,15 @@ mavenPublishing {
         }
         developers {
             developer {
-                id.set("muscaa")
-                name.set("musca")
-                url.set("https://github.com/muscaa/")
+                id.set(developerId)
+                name.set(developerName)
+                url.set("https://github.com/${developerId}/")
             }
         }
         scm {
-            url.set("https://github.com/muscaa/fluff-loader/")
-            connection.set("scm:git:git://github.com/muscaa/fluff-loader.git")
-            developerConnection.set("scm:git:ssh://git@github.com/muscaa/fluff-loader.git")
+            url.set("https://github.com/${developerId}/${projectId}/")
+            connection.set("scm:git:git://github.com/${developerId}/${projectId}.git")
+            developerConnection.set("scm:git:ssh://git@github.com/${developerId}/${projectId}.git")
         }
     }
 }
