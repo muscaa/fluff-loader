@@ -59,9 +59,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: CENTRAL_TOKEN_USERNAME
           server-password: CENTRAL_TOKEN_PASSWORD
+          gpg-private-key: GPG_SIGNING_KEY
+          gpg-passphrase: GPG_SIGNING_KEY_PASSWORD
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
