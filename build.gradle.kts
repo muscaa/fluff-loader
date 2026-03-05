@@ -82,7 +82,7 @@ publishing {
 
     repositories {
         maven {
-            name = "Maven Central"
+            name = "ossrh-staging-api"
             // url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
