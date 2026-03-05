@@ -69,7 +69,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        run: chmod +x ./gradlew && ./gradlew --version
 
       - name: Publish with Gradle
         run: ./gradlew publishToMavenCentral
