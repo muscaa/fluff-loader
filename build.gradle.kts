@@ -82,9 +82,9 @@ publishing {
 
     repositories {
         maven {
-            name = "OSSRH"
+            name = "Maven Central"
             // url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            url = uri("https://central.sonatype.com/api/v1/publisher/upload")
+            url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
                 username = System.getenv("CENTRAL_TOKEN_USERNAME")
                 password = System.getenv("CENTRAL_TOKEN_PASSWORD")
