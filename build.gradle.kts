@@ -34,7 +34,7 @@ mavenPublishing {
 
     pom {
         name.set("Fluff Loader")
-        description.set("A library that provides a Runtime Class Loader, allowing you to dynamically load classes, jars, files, and folders at runtime.")
+        description.set("A library that provides a Runtime Class Loader, allowing you to dynamically load classes, jars, files, and folders at runtime")
         inceptionYear.set("2024")
         url.set("https://github.com/muscaa/fluff-loader/")
         licenses {
