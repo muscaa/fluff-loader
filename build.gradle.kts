@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.muscaa"
-version = System.getenv("GITHUB_REF_NAME")?.removePrefix("v")
+version = System.getenv("GITHUB_REF_NAME")?.removePrefix("v") ?: "0.0.1-SNAPSHOT"
 
 val isCI = System.getenv("GITHUB_ACTIONS") == "true"
 
