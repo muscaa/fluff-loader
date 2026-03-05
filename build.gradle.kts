@@ -19,8 +19,8 @@ val isCI = System.getenv("GITHUB_ACTIONS") == "true"
 // }
 
 java {
-    withSourcesJar()
-    withJavadocJar()
+    // withSourcesJar()
+    // withJavadocJar()
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
