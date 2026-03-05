@@ -1,8 +1,9 @@
 plugins {
     // id "com.github.muscaa.fluff-gradle" version "1.0.12"
     `java-library`
-    `maven-publish`
-    signing
+    // `maven-publish`
+    // signing
+    id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
 group = "io.github.muscaa"
@@ -34,68 +35,89 @@ dependencies {
 	// api "com.github.muscaa:fluff-core:1.0.+"
 }
 
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates(project.group.toString(), project.name.toString(), project.version.toString())
+
+    pom {
+        name.set("Fluff Loader")
+        description.set("A description of what my library does.")
+        inceptionYear.set("2024")
+        url.set("https://github.com/muscaa/fluff-loader/")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("muscaa")
+                name.set("musca")
+                url.set("https://github.com/muscaa/")
+            }
+        }
+        scm {
+            url.set("https://github.com/muscaa/fluff-loader/")
+            connection.set("scm:git:git://github.com/muscaa/fluff-loader.git")
+            developerConnection.set("scm:git:ssh://git@github.com/muscaa/fluff-loader.git")
+        }
+    }
+}
+
 // publishing {
+//     publications {
+//         create<MavenPublication>("maven") {
+//             from(components["java"])
+
+//             groupId = project.group.toString()
+//             // artifactId = "your-artifact-id"
+//             version = project.version.toString()
+            
+//             pom {
+//                 name.set("Fluff Loader")
+//                 description.set("A brief description of your library")
+//                 url.set("https://github.com/muscaa/fluff-loader")
+//                 licenses {
+//                     license {
+//                         name.set("The Apache License, Version 2.0")
+//                         url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+//                     }
+//                 }
+//                 developers {
+//                     developer {
+//                         id.set("muscaa")
+//                         name.set("Musca")
+//                     }
+//                 }
+//                 scm {
+//                     connection.set("scm:git:git://github.com/muscaa/fluff-loader.git")
+//                     url.set("https://github.com/muscaa/fluff-loader")
+//                 }
+//             }
+//         }
+//     }
+
 //     repositories {
 //         maven {
-//             name = "OSSRH"
-//             url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+//             name = "ossrh-staging-api"
+//             // url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+//             url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
 //             credentials {
-//                 username = System.getenv("MAVEN_USERNAME")
-//                 password = System.getenv("MAVEN_PASSWORD")
+//                 username = System.getenv("CENTRAL_TOKEN_USERNAME")
+//                 password = System.getenv("CENTRAL_TOKEN_PASSWORD")
 //             }
 //         }
 //     }
 // }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-
-            groupId = project.group.toString()
-            // artifactId = "your-artifact-id"
-            version = project.version.toString()
-            
-            pom {
-                name.set("Fluff Loader")
-                description.set("A brief description of your library")
-                url.set("https://github.com/muscaa/fluff-loader")
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("muscaa")
-                        name.set("Musca")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/muscaa/fluff-loader.git")
-                    url.set("https://github.com/muscaa/fluff-loader")
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "ossrh-staging-api"
-            // url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-            credentials {
-                username = System.getenv("CENTRAL_TOKEN_USERNAME")
-                password = System.getenv("CENTRAL_TOKEN_PASSWORD")
-            }
-        }
-    }
-}
-
-signing {
-    val signingKey = System.getenv("GPG_SIGNING_KEY")
-    val signingPassword = System.getenv("GPG_SIGNING_KEY_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications["maven"])
-}
+// signing {
+//     val signingKey = System.getenv("GPG_SIGNING_KEY")
+//     val signingPassword = System.getenv("GPG_SIGNING_KEY_PASSWORD")
+//     useInMemoryPgpKeys(signingKey, signingPassword)
+//     sign(publishing.publications["maven"])
+// }
