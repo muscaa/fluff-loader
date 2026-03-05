@@ -40,7 +40,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(project.group.toString(), project.name.toString(), project.version.toString())
+    coordinates(project.group.toString(), project.name, project.version.toString())
 
     pom {
         name.set("Fluff Loader")
