@@ -5,6 +5,9 @@ plugins {
     signing
 }
 
+group = "io.github.muscaa"
+version = System.getenv("GITHUB_REF_NAME")?.removePrefix("v")
+
 val isCI = System.getenv("GITHUB_ACTIONS") == "true"
 
 // fluff {
@@ -48,6 +51,10 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+
+            groupId = project.group.toString()
+            // artifactId = "your-artifact-id"
+            version = project.version.toString()
             
             pom {
                 name.set("Fluff Loader")

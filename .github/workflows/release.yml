@@ -35,9 +35,18 @@
 
 
 name: Publish to Maven Central
+# on:
+#   release:
+#     types: [published]
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+
+# permissions:
+#   contents: write
 
 jobs:
   publish:
