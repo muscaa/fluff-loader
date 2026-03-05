@@ -1,26 +1,12 @@
 plugins {
-    // id "com.github.muscaa.fluff-gradle" version "1.0.12"
-    `java-library`
-    // `maven-publish`
-    // signing
+    id("java-library")
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
-group = "io.github.muscaa"
-version = System.getenv("GITHUB_REF_NAME")?.removePrefix("v") ?: "0.0.1-SNAPSHOT"
-
-val isCI = System.getenv("GITHUB_ACTIONS") == "true"
-
-// fluff {
-// 	include = [
-// 		"LICENSE": "META-INF/LICENSE",
-// 		"NOTICE": "META-INF/NOTICE"
-// 	]
-// }
+group = "dev.musca"
+version = System.getenv("GITHUB_REF_NAME") ?: "0.0.1-SNAPSHOT"
 
 java {
-    // withSourcesJar()
-    // withJavadocJar()
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
@@ -28,23 +14,27 @@ java {
 
 repositories {
     mavenCentral()
-    // maven { url "https://jitpack.io" }
 }
 
 dependencies {
 	// api "com.github.muscaa:fluff-core:1.0.+"
 }
 
+tasks.withType<Jar> {
+    from(layout.projectDirectory) {
+        include("LICENSE", "NOTICE")
+        into("META-INF")
+    }
+}
+
 mavenPublishing {
-    publishToMavenCentral(automaticRelease = true)
-
+    publishToMavenCentral(/*automaticRelease = true*/)
     signAllPublications()
-
     coordinates(project.group.toString(), project.name, project.version.toString())
 
     pom {
         name.set("Fluff Loader")
-        description.set("A description of what my library does.")
+        description.set("A library that provides a Runtime Class Loader, allowing you to dynamically load classes, jars, files, and folders at runtime.")
         inceptionYear.set("2024")
         url.set("https://github.com/muscaa/fluff-loader/")
         licenses {
@@ -68,56 +58,3 @@ mavenPublishing {
         }
     }
 }
-
-// publishing {
-//     publications {
-//         create<MavenPublication>("maven") {
-//             from(components["java"])
-
-//             groupId = project.group.toString()
-//             // artifactId = "your-artifact-id"
-//             version = project.version.toString()
-            
-//             pom {
-//                 name.set("Fluff Loader")
-//                 description.set("A brief description of your library")
-//                 url.set("https://github.com/muscaa/fluff-loader")
-//                 licenses {
-//                     license {
-//                         name.set("The Apache License, Version 2.0")
-//                         url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-//                     }
-//                 }
-//                 developers {
-//                     developer {
-//                         id.set("muscaa")
-//                         name.set("Musca")
-//                     }
-//                 }
-//                 scm {
-//                     connection.set("scm:git:git://github.com/muscaa/fluff-loader.git")
-//                     url.set("https://github.com/muscaa/fluff-loader")
-//                 }
-//             }
-//         }
-//     }
-
-//     repositories {
-//         maven {
-//             name = "ossrh-staging-api"
-//             // url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-//             url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-//             credentials {
-//                 username = System.getenv("CENTRAL_TOKEN_USERNAME")
-//                 password = System.getenv("CENTRAL_TOKEN_PASSWORD")
-//             }
-//         }
-//     }
-// }
-
-// signing {
-//     val signingKey = System.getenv("GPG_SIGNING_KEY")
-//     val signingPassword = System.getenv("GPG_SIGNING_KEY_PASSWORD")
-//     useInMemoryPgpKeys(signingKey, signingPassword)
-//     sign(publishing.publications["maven"])
-// }
