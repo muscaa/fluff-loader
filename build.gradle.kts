@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-	api("dev.musca:fluff-core:2.0.+")
+	api("dev.musca:fluff-core:2.0.0")
 }
 
 tasks.withType<Jar> {
