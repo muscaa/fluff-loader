@@ -114,6 +114,8 @@ public class JarResource extends AbstractContentsResource {
 					}
 				}
 			}
+			
+			return true;
 		} catch (IOException e) {}
 		
 		return false;
